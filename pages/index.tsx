@@ -23,6 +23,7 @@ export default function Index() {
     async function signMessage(e) {
         e.preventDefault()
         const message = e.target.message.value
+        setMessaggeSignature(null)
 
         try {
           if (!selectedWallet) {
@@ -34,8 +35,8 @@ export default function Index() {
           }
 
           const data = new TextEncoder().encode(message)
-          const signed = await selectedWallet.sign(data, 'hex')
-          setMessaggeSignature(toHex(signed.signature))
+          let { signature } = await selectedWallet.sign(data, 'utf8');
+          setMessaggeSignature(toHex(signature))
         } catch (e) {
           console.warn(e)
           console.error(`Error: ${(e as Error).message}`)
@@ -69,38 +70,51 @@ export default function Index() {
             <Head>
                 <title>Ninja Test Task</title>
                 <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet"/>
-
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.3.3/dist/forms.min.css"/>
             </Head>
             <main className="max-w-4xl mx-auto py-12 h-screen flex items-center justify-center">
                 <form className="w-full space-y-2" onSubmit={signMessage}>
                     <div>
-                        <label htmlFor="address">Wallet Address</label>
+                        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                            Wallet Address
+                        </label>
                         <input 
                             type="text"
                             name="address"
                             id="address"
-                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            className="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md"
                             value={walletAddress ?? "Please connect your wallet"}
                             disabled />
                     </div>
                     <div>
-                        <label htmlFor="message">Message</label>
+                        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                            Message
+                        </label>
                         <input 
                             type="text"
                             name="message"
                             id="message"
+                            className="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md"
                             disabled={!walletAddress} />
                     </div>
                     <div>
-                        <label htmlFor="message-signature">Message Signature</label>
+                        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                            Message Signature
+                        </label>
                         <input 
                             type="text"
                             name="message_signature"
                             id="message-signature"
+                            className="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md"
+                            value={messageSignature}
                             disabled />
                     </div>
                     <div>
-                        <button type="submit">Sign message</button>
+                        <button 
+                            className="bg-indigo-600 text-white font-medium text-white rounded-md px-8 py-2" 
+                            type="submit">
+                                Sign message
+                        </button>
                     </div>
                 </form>
             </main>
